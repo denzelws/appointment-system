@@ -8,7 +8,9 @@
     "start": "node dist/interfaces/server.js",
     "migrate": "tsx node_modules/knex/bin/cli.js migrate:latest --knexfile src/infrastructure/database/knexfile.ts",
     "migrate:rollback": "tsx node_modules/knex/bin/cli.js migrate:rollback --knexfile src/infrastructure/database/knexfile.ts",
-    "seed": "tsx node_modules/knex/bin/cli.js seed:run --knexfile src/infrastructure/database/knexfile.ts"
+    "seed": "tsx node_modules/knex/bin/cli.js seed:run --knexfile src/infrastructure/database/knexfile.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@types/node": "^25.6.0",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4"
   }
 }
