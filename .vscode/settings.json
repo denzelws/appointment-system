@@ -1,0 +1,110 @@
+{
+  "workbench.colorTheme": "Dracula Theme",
+  "editor.fontSize": 12,
+  "editor.lineHeight": 20,
+  "editor.tabSize": 2,
+  "editor.fontFamily": "JetBrains Mono, Fira Code",
+  "editor.fontLigatures": true,
+  "terminal.integrated.fontSize": 12,
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // ─── ESLint ───────────────────────────────────────────────────
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  "editor.rulers": [80, 90],
+
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.expo": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/.git": true
+  },
+
+  "explorer.compactFolders": false,
+  "files.exclude": {
+    "**/.expo": true,
+    "**/node_modules": false
+  },
+
+  "material-icon-theme.folders.associations": {
+    "domain": "core",
+    "application": "app",
+    "infrastructure": "connection",
+    "presentation": "views",
+
+    "entities": "class",
+    "schemas": "resource",
+
+    "hooks": "components",
+    "services": "mappings",
+    "store": "container",
+
+    "api": "api",
+    "mock": "mock",
+    "handlers": "middleware",
+    "storage": "database",
+
+    "components": "components",
+    "common": "shared",
+    "schools": "layouts",
+    "classes": "layout",
+    "theme": "theme",
+
+    "utils": "tools",
+    "__tests__": "test"
+  },
+
+  "material-icon-theme.files.associations": {
+    "tsconfig.json": "tune",
+    ".prettierrc": "prettier",
+    ".eslintrc.js": "eslint",
+    ".npmrc": "npm",
+    "jest.config.js": "jest",
+    "app.json": "expo",
+    "*.schema.ts": "database",
+    "*Store.ts": "zustand",
+    "*Service.ts": "angular-service",
+    "*Handler.ts": "routing"
+  },
+
+  "emmet.includeLanguages": {
+    "typescriptreact": "html",
+    "javascriptreact": "html"
+  },
+
+  "path-intellisense.mappings": {
+    "@": "${workspaceFolder}/src"
+  },
+
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.cwd": "${workspaceFolder}"
+}
