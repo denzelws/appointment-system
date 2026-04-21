@@ -39,7 +39,7 @@
   ],
   "eslint.workingDirectories": [{ "mode": "auto" }],
 
-  "editor.rulers": [80, 90],
+  "editor.rulers": [120],
 
   "search.exclude": {
     "**/node_modules": true,
