@@ -11,3 +11,6 @@ export * from "./value-objects/UserRole";
 export * from "./rules/AppointmentRules";
 export * from "./rules/AuthRules";
 export * from "./rules/AvailabilityRules";
+
+export * from "./errors";
+export * from "./interfaces";
