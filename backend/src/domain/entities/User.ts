@@ -29,6 +29,10 @@ export class User {
     return this.props.email;
   }
 
+  get passwordHash(): string {
+    return this.props.passwordHash;
+  }
+
   get role(): UserRole {
     return this.props.role;
   }

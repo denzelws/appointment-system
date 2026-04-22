@@ -66,6 +66,22 @@ export class Appointment {
     return this.props.status === "CANCELLED";
   }
 
+  cancel(): Appointment {
+    return new Appointment({
+      ...this.props,
+      status: "CANCELLED",
+      updatedAt: new Date(),
+    });
+  }
+
+  confirm(): Appointment {
+    return new Appointment({
+      ...this.props,
+      status: "CONFIRMED",
+      updatedAt: new Date(),
+    });
+  }
+
   toPlain(): AppointmentProps {
     return { ...this.props };
   }
