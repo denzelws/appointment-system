@@ -1,6 +1,9 @@
-import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
+import Fastify from "fastify";
+import { errorHandler } from "../interfaces/middleware/error.middleware";
+import { appointmentRoutes } from "../interfaces/routes/appointment.routes";
+import { authRoutes } from "../interfaces/routes/auth.routes";
 import { closeDb, db } from "./database";
 
 export async function buildApp() {
@@ -17,6 +20,8 @@ export async function buildApp() {
     contentSecurityPolicy: false,
   });
 
+  app.setErrorHandler(errorHandler);
+
   app.get("/health", async () => {
     const dbOk = await db
       .raw("SELECT 1")
@@ -28,6 +33,9 @@ export async function buildApp() {
       database: dbOk ? "connected" : "disconnected",
     };
   });
+
+  await app.register(authRoutes, { prefix: "/api/v1" });
+  await app.register(appointmentRoutes, { prefix: "/api/v1" });
 
   const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM"];
   signals.forEach((signal) => {

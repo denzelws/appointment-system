@@ -25,7 +25,7 @@ const baseConfig: Knex.Config = {
     extension: "ts",
   },
   seeds: {
-    directory: path.join(__dirname, "../seeds"),
+    directory: path.join(__dirname, "../database/seeds"),
     extension: "ts",
   },
 };
