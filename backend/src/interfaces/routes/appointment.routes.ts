@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginAsync } from "fastify";
-import { cancel, create, list } from "../controllers/appointment.controller";
+import { cancel, confirm, create, list } from "../controllers/appointment.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 import {
   createAppointmentJsonSchema,
@@ -41,4 +41,10 @@ export const appointmentRoutes: FastifyPluginAsync = async (
     },
     cancel,
   );
+
+  app.patch('/appointments/:id/confirm', {
+  schema: {
+    params: idParamJsonSchema,
+  },
+}, confirm);
 };

@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CancelAppointmentUseCase } from "../../application/use-cases/appointment/CancelAppointmentUseCase";
+import { ConfirmAppointmentUseCase } from "../../application/use-cases/appointment/ConfirmAppointmentUseCase";
 import { CreateAppointmentUseCase } from "../../application/use-cases/appointment/CreateAppointmentUseCase";
 import { ListAppointmentsUseCase } from "../../application/use-cases/appointment/ListAppointmentsUseCase";
 import { UserRole } from "../../domain/value-objects/UserRole";
@@ -88,6 +89,39 @@ export const cancel = async (
     status: 200,
     code: "APPOINTMENT_CANCELLED",
     message: "Agendamento cancelado com sucesso.",
+    data: appointment,
+    timestamp: new Date().toISOString(),
+  });
+};
+
+const confirmAppointmentUseCase = new ConfirmAppointmentUseCase(
+  appointmentRepo,
+  auditRepo
+);
+
+export const confirm = async (
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) => {
+  const { id } = request.params;
+  const user = request.user!;
+
+  if (user.role !== 'ADMIN') {
+    return reply.status(403).send({
+      status: 403,
+      code: 'FORBIDDEN',
+      message: 'Apenas administradores podem confirmar agendamentos.',
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    });
+  }
+
+  const appointment = await confirmAppointmentUseCase.execute(id, user.id);
+
+  return reply.status(200).send({
+    status: 200,
+    code: 'APPOINTMENT_CONFIRMED',
+    message: 'Agendamento confirmado com sucesso.',
     data: appointment,
     timestamp: new Date().toISOString(),
   });
