@@ -23,4 +23,11 @@ export const appointmentService = {
     );
     return data.data;
   },
+
+  async confirm(id: string): Promise<Appointment> {
+  const { data } = await api.patch<ApiResponse<Appointment>>(
+    `/appointments/${id}/confirm`
+  );
+  return data.data;
+},
 };

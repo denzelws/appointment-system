@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
-import { appointmentService } from '../services/appointment.service';
-import type { Appointment } from '../types';
+import { useCallback, useState } from "react";
+import { appointmentService } from "../services/appointment.service";
+import type { Appointment } from "../types";
 
 export function useAppointment() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -16,7 +16,7 @@ export function useAppointment() {
       setAppointments(result.appointments);
       setTotalPages(result.totalPages);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao buscar agendamentos.');
+      setError(err.response?.data?.message || "Erro ao buscar agendamentos.");
     } finally {
       setLoading(false);
     }
@@ -30,7 +30,7 @@ export function useAppointment() {
       await fetchAppointments();
       return appointment;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao criar agendamento.');
+      setError(err.response?.data?.message || "Erro ao criar agendamento.");
       return null;
     } finally {
       setLoading(false);
@@ -45,12 +45,36 @@ export function useAppointment() {
       await fetchAppointments();
       return true;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao cancelar.');
+      setError(err.response?.data?.message || "Erro ao cancelar.");
       return false;
     } finally {
       setLoading(false);
     }
   };
 
-  return { appointments, loading, error, totalPages, fetchAppointments, create, cancel };
+  const confirmAppointment = async (id: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await appointmentService.confirm(id);
+      await fetchAppointments();
+      return true;
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Erro ao confirmar.");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    appointments,
+    loading,
+    error,
+    totalPages,
+    fetchAppointments,
+    create,
+    cancel,
+    confirmAppointment,
+  };
 }

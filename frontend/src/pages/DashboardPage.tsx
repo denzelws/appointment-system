@@ -1,27 +1,37 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useAppointment } from '../hooks/useAppointment';
-import { useAuth } from '../hooks/useAuth';
-import { createAppointmentSchema, type CreateAppointmentInput, } from '../schemas';
-import { type Appointment } from '../types';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useAppointment } from "../hooks/useAppointment";
+import { useAuth } from "../hooks/useAuth";
+import {
+  createAppointmentSchema,
+  type CreateAppointmentInput,
+} from "../schemas";
+import { type Appointment } from "../types";
 
 const STATUS_LABEL: Record<string, string> = {
-  PENDING: 'Pendente',
-  CONFIRMED: 'Confirmado',
-  CANCELLED: 'Cancelado',
+  PENDING: "Pendente",
+  CONFIRMED: "Confirmado",
+  CANCELLED: "Cancelado",
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  CONFIRMED: 'bg-green-100 text-green-800',
-  CANCELLED: 'bg-gray-100 text-gray-500',
+  PENDING: "bg-yellow-100 text-yellow-800",
+  CONFIRMED: "bg-green-100 text-green-800",
+  CANCELLED: "bg-gray-100 text-gray-500",
 };
 
 export function DashboardPage() {
   const { user, logout } = useAuth();
-  const { appointments, loading, error, fetchAppointments, create, cancel } =
-    useAppointment();
+  const {
+    appointments,
+    loading,
+    error,
+    fetchAppointments,
+    create,
+    cancel,
+    confirmAppointment,
+  } = useAppointment();
 
   const {
     register,
@@ -43,8 +53,13 @@ export function DashboardPage() {
   };
 
   const handleCancel = async (id: string) => {
-    if (!confirm('Cancelar este agendamento?')) return;
+    if (!confirm("Cancelar este agendamento?")) return;
     await cancel(id);
+  };
+
+  const handleConfirm = async (id: string) => {
+    if (!window.confirm("Confirmar este agendamento?")) return;
+    await confirmAppointment(id);
   };
 
   return (
@@ -53,12 +68,15 @@ export function DashboardPage() {
         <h1 className="text-lg font-semibold text-gray-800">Agendamentos</h1>
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-600">
-            {user?.name}{' '}
+            {user?.name}{" "}
             <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
               {user?.role}
             </span>
           </span>
-          <button onClick={logout} className="text-sm text-red-500 hover:underline">
+          <button
+            onClick={logout}
+            className="text-sm text-red-500 hover:underline"
+          >
             Sair
           </button>
         </div>
@@ -82,7 +100,7 @@ export function DashboardPage() {
                 </label>
                 <input
                   type="datetime-local"
-                  {...register('start_time')}
+                  {...register("start_time")}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {errors.start_time && (
@@ -97,14 +115,16 @@ export function DashboardPage() {
                   Observações
                 </label>
                 <textarea
-                  {...register('notes')}
+                  {...register("notes")}
                   maxLength={500}
                   rows={3}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Opcional..."
                 />
                 {errors.notes && (
-                  <p className="mt-1 text-xs text-red-500">{errors.notes.message}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors.notes.message}
+                  </p>
                 )}
               </div>
 
@@ -113,7 +133,7 @@ export function DashboardPage() {
                 disabled={isSubmitting || loading}
                 className="w-full bg-blue-600 text-white py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
               >
-                {isSubmitting || loading ? 'Criando...' : 'Agendar'}
+                {isSubmitting || loading ? "Criando..." : "Agendar"}
               </button>
             </form>
           </div>
@@ -122,7 +142,9 @@ export function DashboardPage() {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-base font-semibold mb-4">
-              {user?.role === 'ADMIN' ? 'Todos os Agendamentos' : 'Meus Agendamentos'}
+              {user?.role === "ADMIN"
+                ? "Todos os Agendamentos"
+                : "Meus Agendamentos"}
             </h2>
 
             {loading && appointments.length === 0 && (
@@ -130,7 +152,9 @@ export function DashboardPage() {
             )}
 
             {!loading && appointments.length === 0 && (
-              <p className="text-sm text-gray-500">Nenhum agendamento encontrado.</p>
+              <p className="text-sm text-gray-500">
+                Nenhum agendamento encontrado.
+              </p>
             )}
 
             <div className="space-y-3">
@@ -148,11 +172,11 @@ export function DashboardPage() {
                       </span>
                     </div>
                     <p className="text-sm font-semibold text-gray-800">
-                      {new Date(apt.startTime).toLocaleString('pt-BR')}
-                      {' → '}
-                      {new Date(apt.endTime).toLocaleTimeString('pt-BR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
+                      {new Date(apt.startTime).toLocaleString("pt-BR")}
+                      {" → "}
+                      {new Date(apt.endTime).toLocaleTimeString("pt-BR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </p>
                     {apt.notes && (
@@ -160,14 +184,25 @@ export function DashboardPage() {
                     )}
                   </div>
 
-                  {apt.status !== 'CANCELLED' && (
-                    <button
-                      onClick={() => handleCancel(apt.id)}
-                      className="text-xs text-red-500 hover:underline ml-4"
-                    >
-                      Cancelar
-                    </button>
-                  )}
+                  <div className="flex flex-col gap-1 ml-4">
+                    {user?.role === "ADMIN" && apt.status === "PENDING" && (
+                      <button
+                        onClick={() => handleConfirm(apt.id)}
+                        className="text-xs text-green-600 hover:underline"
+                      >
+                        Confirmar
+                      </button>
+                    )}
+
+                    {apt.status !== "CANCELLED" && (
+                      <button
+                        onClick={() => handleCancel(apt.id)}
+                        className="text-xs text-red-500 hover:underline"
+                      >
+                        Cancelar
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
