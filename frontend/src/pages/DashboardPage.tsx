@@ -1,28 +1,18 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+
+import { AppointmentCalendar } from "../components/dashboard/AppointmentCalendar";
+import { AppointmentForm } from "../components/dashboard/AppointmentForm";
+import { TimelineRow } from "../components/dashboard/TimelineRow";
+import { DashboardHeader } from "../components/layout/DashboardHeader";
+import { Sidebar } from "../components/layout/Sidebar";
+
 import { useAppointment } from "../hooks/useAppointment";
 import { useAuth } from "../hooks/useAuth";
-import {
-  createAppointmentSchema,
-  type CreateAppointmentInput,
-} from "../schemas";
+
 import { type Appointment } from "../types";
 
-const STATUS_LABEL: Record<string, string> = {
-  PENDING: "Pendente",
-  CONFIRMED: "Confirmado",
-  CANCELLED: "Cancelado",
-};
-
-const STATUS_COLOR: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  CONFIRMED: "bg-green-100 text-green-800",
-  CANCELLED: "bg-gray-100 text-gray-500",
-};
-
 export function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const {
     appointments,
     loading,
@@ -33,178 +23,153 @@ export function DashboardPage() {
     confirmAppointment,
   } = useAppointment();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<CreateAppointmentInput>({
-    resolver: zodResolver(createAppointmentSchema),
+  const now = new Date();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date(),
+  );
+  const [selectedSlot, setSelectedSlot] = useState("09:00 AM");
+
+  const todayLabel = now.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   useEffect(() => {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  const onSubmit = async (data: CreateAppointmentInput) => {
-    const isoDate = new Date(data.start_time).toISOString();
-    const apt = await create(isoDate, data.notes);
-    if (apt) reset();
+  const handleCreate = async (isoDate: string, notes?: string) => {
+    return await create(isoDate, notes);
   };
 
   const handleCancel = async (id: string) => {
-    if (!confirm("Cancelar este agendamento?")) return;
+    if (!window.confirm("Cancel this appointment?")) return;
     await cancel(id);
   };
 
   const handleConfirm = async (id: string) => {
-    if (!window.confirm("Confirmar este agendamento?")) return;
+    if (!window.confirm("Confirm this appointment?")) return;
     await confirmAppointment(id);
   };
 
+  const confirmed = appointments.filter((a) => a.status === "CONFIRMED").length;
+  const pending = appointments.filter((a) => a.status === "PENDING").length;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <h1 className="text-lg font-semibold text-gray-800">Agendamentos</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">
-            {user?.name}{" "}
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-              {user?.role}
-            </span>
-          </span>
-          <button
-            onClick={logout}
-            className="text-sm text-red-500 hover:underline"
-          >
-            Sair
-          </button>
-        </div>
-      </header>
+    <div
+      className="min-h-screen flex relative overflow-hidden"
+      style={{ backgroundColor: "#090C15" }}
+    >
+      <div
+        className="absolute -top-[10%] -right-[5%] w-[800px] h-[800px] rounded-full blur-[140px] pointer-events-none opacity-30 mix-blend-screen z-0"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(79,110,247,1) 0%, rgba(139,92,246,1) 100%)",
+        }}
+      />
+      <div
+        className="absolute -bottom-[10%] -left-[5%] w-[800px] h-[800px] rounded-full blur-[140px] pointer-events-none opacity-20 mix-blend-screen z-0"
+        style={{
+          background:
+            "linear-gradient(270deg, rgba(79,110,247,1) 0%, rgba(139,92,246,1) 100%)",
+        }}
+      />
 
-      <main className="max-w-5xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-base font-semibold mb-4">Novo Agendamento</h2>
+      <Sidebar />
+      <DashboardHeader />
 
-            {error && (
-              <div className="mb-3 p-3 bg-red-50 text-red-700 rounded text-sm">
-                {error}
-              </div>
-            )}
+      <main
+        className="relative z-10 flex-1 flex gap-6 p-8"
+        style={{ marginLeft: "240px", marginTop: "80px" }}
+      >
+        <div className="relative w-full flex gap-6">
+          <div className="w-[360px] flex-shrink-0">
+            <div className="bg-[#131929]/90 backdrop-blur-2xl border border-white/[0.04] rounded-2xl p-6 shadow-2xl">
+              <AppointmentCalendar
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+              />
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Data e Hora
-                </label>
-                <input
-                  type="datetime-local"
-                  {...register("start_time")}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors.start_time && (
-                  <p className="mt-1 text-xs text-red-500">
-                    {errors.start_time.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Observações
-                </label>
-                <textarea
-                  {...register("notes")}
-                  maxLength={500}
-                  rows={3}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Opcional..."
-                />
-                {errors.notes && (
-                  <p className="mt-1 text-xs text-red-500">
-                    {errors.notes.message}
-                  </p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting || loading}
-                className="w-full bg-blue-600 text-white py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
-              >
-                {isSubmitting || loading ? "Criando..." : "Agendar"}
-              </button>
-            </form>
+              <AppointmentForm
+                selectedDate={selectedDate}
+                selectedSlot={selectedSlot}
+                onSelectSlot={setSelectedSlot}
+                onCreate={handleCreate}
+                loading={loading}
+                error={error}
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-base font-semibold mb-4">
-              {user?.role === "ADMIN"
-                ? "Todos os Agendamentos"
-                : "Meus Agendamentos"}
-            </h2>
+          <div className="flex-1 flex flex-col min-w-0">
+            <div className="bg-[#131929]/90 backdrop-blur-2xl border border-white/[0.04] rounded-2xl flex-1 flex flex-col shadow-2xl overflow-hidden">
+              <div className="px-8 pt-8 pb-6 flex items-start justify-between">
+                <div>
+                  <h2 className="font-display text-xl font-semibold text-white tracking-tight mb-1">
+                    Operational Timeline
+                  </h2>
+                  <p className="text-[14px] text-[#6A7E9C]">{todayLabel}</p>
+                </div>
+                {user?.role === "ADMIN" && (
+                  <span
+                    className="text-[11px] font-semibold px-3 py-1.5 rounded-full"
+                    style={{
+                      background: "rgba(79,110,247,0.1)",
+                      border: "1px solid rgba(79,110,247,0.2)",
+                      color: "#8CA4FF",
+                    }}
+                  >
+                    Admin Workspace
+                  </span>
+                )}
+              </div>
 
-            {loading && appointments.length === 0 && (
-              <p className="text-sm text-gray-500">Carregando...</p>
-            )}
+              <div className="h-px w-full bg-white/[0.04]" />
 
-            {!loading && appointments.length === 0 && (
-              <p className="text-sm text-gray-500">
-                Nenhum agendamento encontrado.
-              </p>
-            )}
+              <div className="flex-1 p-2 overflow-y-auto">
+                {loading && appointments.length === 0 && (
+                  <p className="text-[13px] text-[#6A7E9C] text-center py-12">
+                    Loading...
+                  </p>
+                )}
+                {!loading && appointments.length === 0 && (
+                  <p className="text-[13px] text-[#6A7E9C] text-center py-12">
+                    No appointments scheduled.
+                  </p>
+                )}
+                <div className="flex flex-col">
+                  {appointments.map((apt: Appointment) => (
+                    <TimelineRow
+                      key={apt.id}
+                      apt={apt}
+                      userRole={user?.role || "USER"}
+                      onConfirm={handleConfirm}
+                      onCancel={handleCancel}
+                    />
+                  ))}
+                </div>
+              </div>
 
-            <div className="space-y-3">
-              {appointments.map((apt: Appointment) => (
-                <div
-                  key={apt.id}
-                  className="border border-gray-100 rounded-lg p-4 flex justify-between items-start"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLOR[apt.status]}`}
-                      >
-                        {STATUS_LABEL[apt.status]}
+              {appointments.length > 0 && (
+                <div className="px-8 py-5 border-t border-white/[0.04] bg-[#111624]/50 flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#4ADE80] shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
+                      <span className="text-[13px] text-[#8A9DC0]">
+                        {confirmed} Confirmed
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-gray-800">
-                      {new Date(apt.startTime).toLocaleString("pt-BR")}
-                      {" → "}
-                      {new Date(apt.endTime).toLocaleTimeString("pt-BR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                    {apt.notes && (
-                      <p className="text-xs text-gray-500 mt-1">{apt.notes}</p>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col gap-1 ml-4">
-                    {user?.role === "ADMIN" && apt.status === "PENDING" && (
-                      <button
-                        onClick={() => handleConfirm(apt.id)}
-                        className="text-xs text-green-600 hover:underline"
-                      >
-                        Confirmar
-                      </button>
-                    )}
-
-                    {apt.status !== "CANCELLED" && (
-                      <button
-                        onClick={() => handleCancel(apt.id)}
-                        className="text-xs text-red-500 hover:underline"
-                      >
-                        Cancelar
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#FBBF24] shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
+                      <span className="text-[13px] text-[#8A9DC0]">
+                        {pending} Pending
+                      </span>
+                    </div>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
