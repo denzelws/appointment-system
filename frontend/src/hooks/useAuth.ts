@@ -40,8 +40,8 @@ export function useAuth() {
   };
 
   const logout = () => {
-    authService.logout();
     setUser(null);
+    authService.logout();
   };
 
   return { user, loading, error, login, register, logout };

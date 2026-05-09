@@ -70,9 +70,7 @@ export function DashboardHeader() {
             <p className="text-[13px] font-semibold text-white">
               {user?.role === "ADMIN" ? "Admin Workspace" : "Pro Plan"}
             </p>
-            <p className="text-[11px] text-[#6A7E9C]">
-              {user?.name || "Administrador"}
-            </p>
+            <p className="text-[11px] text-[#6A7E9C]">{user?.name ?? ""}</p>
           </div>
           <img
             src="https://i.pravatar.cc/150?img=11"

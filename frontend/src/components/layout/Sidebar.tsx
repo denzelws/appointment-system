@@ -91,7 +91,6 @@ export function Sidebar() {
       }}
     >
       <div className="flex items-center gap-3 px-6 py-8">
-        {/* CORREÇÃO 1: bg-[#4F6EF7] no lugar de bg-accent */}
         <div className="w-8 h-8 bg-[#4F6EF7] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(79,110,247,0.4)]">
           <SchedulrIcon size={20} color="#fff" />
         </div>
@@ -106,8 +105,7 @@ export function Sidebar() {
             key={item.label}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-medium transition-all duration-200 group ${
               item.active
-                ? // CORREÇÃO 2: bg-[#4F6EF7] no lugar de bg-accent no item ativo
-                  "bg-[#4F6EF7] text-white shadow-lg shadow-[0_4px_14px_rgba(79,110,247,0.25)]"
+                ? "bg-[#4F6EF7] text-white shadow-lg shadow-[0_4px_14px_rgba(79,110,247,0.25)]"
                 : "text-[#8A9DC0] hover:bg-white/[0.04] hover:text-white"
             }`}
           >
@@ -130,10 +128,10 @@ export function Sidebar() {
         <div className="flex items-center gap-3 mb-4">
           <div className="min-w-0 flex-1">
             <p className="text-[14px] font-medium text-white truncate">
-              {user?.name || "Administrador"}
+              {user?.name || ""}
             </p>
             <p className="text-[12px] text-[#6A7E9C] truncate">
-              {user?.email || "admin@email.com"}
+              {user?.email || ""}
             </p>
           </div>
         </div>
