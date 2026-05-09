@@ -1,14 +1,14 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError } from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
 
 export const api = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { "Content-Type": "application/json" },
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -18,11 +18,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError<{ message: string; code: string }>) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    const isAuthRoute = error.config?.url?.includes("/auth/");
+
+    if (error.response?.status === 401 && !isAuthRoute) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
