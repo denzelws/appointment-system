@@ -40,15 +40,13 @@ export function DashboardHeader() {
       style={{
         left: "240px",
         height: "80px",
-        // O Truque: Cor do fundo (#090C15 convertida em RGBA) + 80% de opacidade + Blur
         background: "rgba(9, 12, 21, 0.8)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid transparent", // Sem borda visível para não quebrar a fluidez
+        borderBottom: "1px solid transparent",
       }}
     >
       <div className="w-[400px]">
-        {/* Input de busca levemente translúcido */}
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.04] backdrop-blur-md hover:bg-white/[0.06] hover:border-white/[0.08] transition-all cursor-text group">
           <span className="text-[#6A7E9C] group-hover:text-[#8A9DC0] transition-colors">
             <SearchIcon />
@@ -62,7 +60,6 @@ export function DashboardHeader() {
       <div className="flex items-center gap-5">
         <button className="relative text-[#6A7E9C] hover:text-white transition-colors">
           <BellIcon />
-          {/* Pontinho de notificação com a cor da marca */}
           <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#4F6EF7] shadow-[0_0_8px_rgba(79,110,247,0.6)]" />
         </button>
 

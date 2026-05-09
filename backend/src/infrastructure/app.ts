@@ -14,6 +14,7 @@ export async function buildApp() {
   await app.register(cors, {
     origin: true,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   });
 
   await app.register(helmet, {
