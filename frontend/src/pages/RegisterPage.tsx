@@ -67,7 +67,7 @@ export function RegisterPage() {
 
   const onSubmit = async (data: RegisterInput) => {
     const ok = await registerUser(data.name, data.email, data.password);
-    if (ok) navigate("/login");
+    if (ok) navigate("/dashboard");
   };
 
   return (

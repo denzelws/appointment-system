@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { authService } from '../services/auth.service';
-import type { User } from '../types';
+import { useState } from "react";
+import { authService } from "../services/auth.service";
+import type { User } from "../types";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(authService.getStoredUser());
@@ -15,7 +15,7 @@ export function useAuth() {
       setUser(user);
       return true;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao fazer login.');
+      setError(err.response?.data?.message || "Erro ao fazer login.");
       return false;
     } finally {
       setLoading(false);
@@ -27,9 +27,12 @@ export function useAuth() {
     setError(null);
     try {
       await authService.register(name, email, password);
+
+      const { user } = await authService.login(email, password);
+      setUser(user);
       return true;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao cadastrar.');
+      setError(err.response?.data?.message || "Erro ao cadastrar.");
       return false;
     } finally {
       setLoading(false);
