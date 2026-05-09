@@ -17,6 +17,7 @@ const STATUS_CONFIG = {
 interface TimelineRowProps {
   apt: Appointment;
   userRole: string;
+  currentUserId: string;
   onConfirm: (id: string) => void;
   onCancel: (id: string) => void;
 }
@@ -24,11 +25,19 @@ interface TimelineRowProps {
 export function TimelineRow({
   apt,
   userRole,
+  currentUserId,
   onConfirm,
   onCancel,
 }: TimelineRowProps) {
   const [hovered, setHovered] = useState(false);
   const status = STATUS_CONFIG[apt.status as keyof typeof STATUS_CONFIG];
+
+  const isAdmin = userRole === "ADMIN";
+  const isOwner = apt.userId === currentUserId;
+
+  // Regras de permissão espelhando o backend (RN007 + RN011)
+  const canCancel = apt.status !== "CANCELLED" && (isAdmin || isOwner);
+  const canConfirm = isAdmin && apt.status === "PENDING";
 
   const startTime = new Date(apt.startTime).toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -67,9 +76,9 @@ export function TimelineRow({
       </div>
 
       <div className="flex items-center gap-3">
-        {hovered && apt.status !== "CANCELLED" ? (
+        {hovered && (canCancel || canConfirm) ? (
           <>
-            {userRole === "ADMIN" && apt.status === "PENDING" && (
+            {canConfirm && (
               <button
                 onClick={() => onConfirm(apt.id)}
                 className="text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-all"
@@ -82,17 +91,19 @@ export function TimelineRow({
                 CONFIRM
               </button>
             )}
-            <button
-              onClick={() => onCancel(apt.id)}
-              className="text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-all"
-              style={{
-                color: "#F87171",
-                borderColor: "rgba(248,113,113,0.2)",
-                background: "rgba(248,113,113,0.06)",
-              }}
-            >
-              CANCEL
-            </button>
+            {canCancel && (
+              <button
+                onClick={() => onCancel(apt.id)}
+                className="text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-all"
+                style={{
+                  color: "#F87171",
+                  borderColor: "rgba(248,113,113,0.2)",
+                  background: "rgba(248,113,113,0.06)",
+                }}
+              >
+                CANCEL
+              </button>
+            )}
           </>
         ) : (
           <span

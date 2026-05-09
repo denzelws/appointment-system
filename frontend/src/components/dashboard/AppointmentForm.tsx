@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   createAppointmentSchema,
@@ -30,22 +31,29 @@ export function AppointmentForm({
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CreateAppointmentInput>({
     resolver: zodResolver(createAppointmentSchema),
   });
 
+  useEffect(() => {
+    if (selectedDate) {
+      setValue("start_time", buildSlotISO(selectedDate, selectedSlot), {
+        shouldValidate: false,
+      });
+    }
+  }, [selectedDate, selectedSlot, setValue]);
+
   const onSubmit = async (data: CreateAppointmentInput) => {
     if (!selectedDate) return;
-    const isoDate = buildSlotISO(selectedDate, selectedSlot);
-    const apt = await onCreate(isoDate, data.notes);
+    const apt = await onCreate(data.start_time, data.notes);
     if (apt) reset();
   };
 
-  const isoValue = selectedDate ? buildSlotISO(selectedDate, selectedSlot) : "";
-
   return (
     <>
+      {/* Slots */}
       <div className="mb-6">
         <p className="text-[11px] font-semibold text-[#6A7E9C] tracking-wider mb-3 uppercase">
           Available Slots
@@ -69,6 +77,8 @@ export function AppointmentForm({
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <input type="hidden" {...register("start_time")} />
+
         <div>
           <textarea
             {...register("notes")}
@@ -96,7 +106,11 @@ export function AppointmentForm({
           )}
         </div>
 
-        <input type="hidden" {...register("start_time")} value={isoValue} />
+        {errors.start_time && (
+          <p className="text-[11px]" style={{ color: "#F87171" }}>
+            {errors.start_time.message}
+          </p>
+        )}
 
         {error && (
           <p

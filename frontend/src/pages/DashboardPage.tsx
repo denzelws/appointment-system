@@ -145,6 +145,7 @@ export function DashboardPage() {
                       key={apt.id}
                       apt={apt}
                       userRole={user?.role || "USER"}
+                      currentUserId={user?.id || ""}
                       onConfirm={handleConfirm}
                       onCancel={handleCancel}
                     />
