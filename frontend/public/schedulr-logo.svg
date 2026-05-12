@@ -1,0 +1,42 @@
+<svg width="2172" height="724" viewBox="0 0 2172 724" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schedulr logo">
+  <defs>
+    <linearGradient id="schedulr-accent-blue" x1="232" y1="204" x2="550" y2="286" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B7CFF"/>
+      <stop offset="1" stop-color="#4F6EF7"/>
+    </linearGradient>
+
+    <linearGradient id="schedulr-accent-purple" x1="232" y1="421" x2="550" y2="502" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6C4DFF"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+
+    <linearGradient id="schedulr-accent-mix" x1="466" y1="312" x2="550" y2="396" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F6EF7"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon -->
+  <g id="schedulr-icon">
+    <rect x="232" y="203" width="84" height="84" rx="42" fill="url(#schedulr-accent-blue)"/>
+    <rect x="340" y="203" width="210" height="84" rx="42" fill="url(#schedulr-accent-blue)"/>
+
+    <rect x="232" y="312" width="210" height="82" rx="41" fill="#4F6EF7"/>
+    <rect x="466" y="312" width="84" height="84" rx="42" fill="url(#schedulr-accent-mix)"/>
+
+    <rect x="232" y="421" width="84" height="84" rx="42" fill="url(#schedulr-accent-purple)"/>
+    <rect x="340" y="421" width="210" height="82" rx="41" fill="url(#schedulr-accent-purple)"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text
+    x="670"
+    y="464"
+    fill="#F8FAFC"
+    font-family="Satoshi, Inter, Manrope, Avenir Next, Helvetica Neue, Arial, sans-serif"
+    font-size="300"
+    font-weight="700"
+    letter-spacing="-15">
+    Schedulr
+  </text>
+</svg>

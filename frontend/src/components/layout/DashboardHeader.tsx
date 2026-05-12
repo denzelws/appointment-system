@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
 const SearchIcon = () => (
@@ -41,6 +42,7 @@ export function DashboardHeader({
   onSearchChange,
 }: DashboardHeaderProps) {
   const { user } = useAuth();
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   return (
     <header
@@ -70,10 +72,30 @@ export function DashboardHeader({
       </div>
 
       <div className="flex items-center gap-5">
-        <button className="relative text-[#6A7E9C] hover:text-white transition-colors">
-          <BellIcon />
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#4F6EF7] shadow-[0_0_8px_rgba(79,110,247,0.6)]" />
-        </button>
+        <div className="relative">
+          <button
+            type="button"
+            aria-expanded={isNotificationsOpen}
+            aria-label="Notifications"
+            onClick={() => setIsNotificationsOpen((open) => !open)}
+            className="relative text-[#6A7E9C] hover:text-white transition-colors"
+          >
+            <BellIcon />
+            <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#4F6EF7] shadow-[0_0_8px_rgba(79,110,247,0.65)]" />
+          </button>
+
+          {isNotificationsOpen && (
+            <div className="absolute right-0 top-9 w-72 rounded-xl border border-white/[0.07] bg-[#101628]/95 p-4 shadow-2xl backdrop-blur-xl">
+              <p className="text-[13px] font-semibold text-white">
+                Welcome back!
+              </p>
+              <p className="mt-1 text-[12px] leading-5 text-[#8A9DC0]">
+                Your dashboard is ready. Create or manage appointments from
+                here.
+              </p>
+            </div>
+          )}
+        </div>
 
         <div className="h-6 w-px bg-white/[0.06]" />
 

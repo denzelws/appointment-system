@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { SchedulrIcon } from "../design-system/SchedulrIcon";
 import { useAuth } from "../hooks/useAuth";
 import { registerSchema, type RegisterInput } from "../schemas";
 
@@ -114,14 +113,12 @@ export function RegisterPage() {
         }}
       />
 
-      <div className="flex items-center gap-2.5 mb-8 relative z-10">
-        <SchedulrIcon size={32} />
-        <span
-          className="font-display text-lg font-semibold tracking-tight"
-          style={{ color: "#E8EEFF" }}
-        >
-          Schedulr
-        </span>
+      <div className="relative z-10 mb-8 flex items-center justify-center">
+        <img
+          src="/schedulr-logo.svg"
+          alt="Schedulr"
+          className="h-auto w-40"
+        />
       </div>
 
       <div
