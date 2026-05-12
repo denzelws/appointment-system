@@ -31,7 +31,15 @@ const BellIcon = () => (
   </svg>
 );
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+}
+
+export function DashboardHeader({
+  searchValue,
+  onSearchChange,
+}: DashboardHeaderProps) {
   const { user } = useAuth();
 
   return (
@@ -47,14 +55,18 @@ export function DashboardHeader() {
       }}
     >
       <div className="w-[400px]">
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.04] backdrop-blur-md hover:bg-white/[0.06] hover:border-white/[0.08] transition-all cursor-text group">
+        <label className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.04] backdrop-blur-md hover:bg-white/[0.06] hover:border-white/[0.08] transition-all cursor-text group">
           <span className="text-[#6A7E9C] group-hover:text-[#8A9DC0] transition-colors">
             <SearchIcon />
           </span>
-          <span className="text-[13px] flex-1 text-[#6A7E9C] group-hover:text-[#8A9DC0] transition-colors">
-            Search appointments, clients...
-          </span>
-        </div>
+          <input
+            value={searchValue}
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder="Search appointments..."
+            className="min-w-0 flex-1 bg-transparent text-[13px] text-[#C8D4F0] outline-none placeholder:text-[#6A7E9C]"
+            type="search"
+          />
+        </label>
       </div>
 
       <div className="flex items-center gap-5">

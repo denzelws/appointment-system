@@ -10,7 +10,11 @@ import { useAppointment } from "../hooks/useAppointment";
 import { useAuth } from "../hooks/useAuth";
 
 import { type Appointment } from "../types";
-import { formatCalendarDate } from "../utils/business-timezone";
+import {
+  formatBusinessTime,
+  formatCalendarDate,
+  getBusinessDateSearchParts,
+} from "../utils/business-timezone";
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -32,6 +36,7 @@ export function DashboardPage() {
   const [selectedSlot, setSelectedSlot] = useState("09:00 AM");
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -93,6 +98,12 @@ export function DashboardPage() {
 
   const confirmed = appointments.filter((a) => a.status === "CONFIRMED").length;
   const pending = appointments.filter((a) => a.status === "PENDING").length;
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+  const filteredAppointments = normalizedSearch
+    ? appointments.filter((appointment) =>
+        getAppointmentSearchText(appointment).includes(normalizedSearch),
+      )
+    : appointments;
 
   return (
     <div
@@ -102,7 +113,10 @@ export function DashboardPage() {
       <div className="premium-ambient-bg" />
 
       <Sidebar />
-      <DashboardHeader />
+      <DashboardHeader
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
 
       <main
         className="relative z-10 flex-1 overflow-y-auto p-8"
@@ -165,8 +179,15 @@ export function DashboardPage() {
                     No appointments scheduled.
                   </p>
                 )}
+                {!loading &&
+                  appointments.length > 0 &&
+                  filteredAppointments.length === 0 && (
+                    <p className="text-[13px] text-[#6A7E9C] text-center py-12">
+                      No appointments match your search.
+                    </p>
+                  )}
                 <div className="flex flex-col">
-                  {appointments.map((apt: Appointment) => (
+                  {filteredAppointments.map((apt: Appointment) => (
                     <TimelineRow
                       key={apt.id}
                       apt={apt}
@@ -203,4 +224,15 @@ export function DashboardPage() {
       </main>
     </div>
   );
+}
+
+function getAppointmentSearchText(appointment: Appointment): string {
+  return [
+    appointment.notes || "Appointment",
+    appointment.status,
+    formatBusinessTime(appointment.startTime),
+    ...getBusinessDateSearchParts(appointment.startTime),
+  ]
+    .join(" ")
+    .toLowerCase();
 }

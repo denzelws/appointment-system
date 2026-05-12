@@ -29,6 +29,11 @@ export function AppointmentForm({
   loading,
   error,
 }: AppointmentFormProps) {
+  const hasValidSlot =
+    Boolean(selectedDate) &&
+    selectedSlot.trim().length > 0 &&
+    availableSlots.includes(selectedSlot);
+
   const {
     register,
     handleSubmit,
@@ -40,15 +45,18 @@ export function AppointmentForm({
   });
 
   useEffect(() => {
-    if (selectedDate) {
+    if (selectedDate && hasValidSlot) {
       setValue("start_time", buildSlotISO(selectedDate, selectedSlot), {
         shouldValidate: false,
       });
+      return;
     }
-  }, [selectedDate, selectedSlot, setValue]);
+
+    setValue("start_time", "", { shouldValidate: false });
+  }, [hasValidSlot, selectedDate, selectedSlot, setValue]);
 
   const onSubmit = async (data: CreateAppointmentInput) => {
-    if (!selectedDate) return;
+    if (!selectedDate || !hasValidSlot) return;
     const apt = await onCreate(data.start_time, data.notes);
     if (apt) reset();
   };
@@ -77,20 +85,20 @@ export function AppointmentForm({
         ) : (
           <div className="scrollbar-premium max-h-32 overflow-y-auto pr-1">
             <div className="flex flex-wrap gap-1.5">
-            {availableSlots.map((slot) => (
-              <button
-                key={slot}
-                type="button"
-                onClick={() => onSelectSlot(slot)}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border ${
-                  selectedSlot === slot
-                    ? "bg-[#4F6EF7] border-[#4F6EF7] text-white shadow-[0_0_15px_rgba(79,110,247,0.4)]"
-                    : "bg-transparent border-white/[0.08] text-[#8A9DC0] hover:border-white/[0.2]"
-                }`}
-              >
-                {slot}
-              </button>
-            ))}
+              {availableSlots.map((slot) => (
+                <button
+                  key={slot}
+                  type="button"
+                  onClick={() => onSelectSlot(slot)}
+                  className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border ${
+                    selectedSlot === slot
+                      ? "bg-[#4F6EF7] border-[#4F6EF7] text-white shadow-[0_0_15px_rgba(79,110,247,0.4)]"
+                      : "bg-transparent border-white/[0.08] text-[#8A9DC0] hover:border-white/[0.2]"
+                  }`}
+                >
+                  {slot}
+                </button>
+              ))}
             </div>
           </div>
         )}
@@ -143,17 +151,19 @@ export function AppointmentForm({
 
         <button
           type="submit"
-          disabled={isSubmitting || loading || !selectedDate}
+          disabled={isSubmitting || loading || !selectedDate || !hasValidSlot}
           className="w-full text-white font-medium text-[14px] py-3.5 rounded-xl transition-all"
           style={{
             background:
-              isSubmitting || loading ? "rgba(79,110,247,0.5)" : "#4F6EF7",
+              isSubmitting || loading || !hasValidSlot
+                ? "rgba(79,110,247,0.5)"
+                : "#4F6EF7",
             boxShadow:
-              isSubmitting || loading
+              isSubmitting || loading || !hasValidSlot
                 ? "none"
                 : "0 8px 20px -6px rgba(79,110,247,0.5)",
             cursor:
-              isSubmitting || loading || !selectedDate
+              isSubmitting || loading || !selectedDate || !hasValidSlot
                 ? "not-allowed"
                 : "pointer",
           }}
