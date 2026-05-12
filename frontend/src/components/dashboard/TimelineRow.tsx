@@ -48,6 +48,7 @@ export function TimelineRow({
 
   return (
     <div
+      data-testid="timeline-row"
       className={`flex items-center gap-5 px-6 py-4 rounded-xl transition-colors relative ${
         hovered ? "bg-white/[0.02]" : ""
       }`}
@@ -63,7 +64,10 @@ export function TimelineRow({
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-[14px] font-semibold text-white truncate">
+        <p
+          data-testid="timeline-note"
+          className="text-[14px] font-semibold text-white truncate"
+        >
           {apt.notes || "Appointment"}
         </p>
         <p className="text-[13px] text-[#6A7E9C] mt-0.5">
@@ -103,6 +107,7 @@ export function TimelineRow({
           </>
         ) : (
           <span
+            data-testid="timeline-status"
             className={`text-[10px] font-bold px-3 py-1.5 rounded-full border ${status.class}`}
           >
             {status.label}

@@ -182,6 +182,7 @@ export function LoginPage() {
               <input
                 type="email"
                 placeholder="name@company.com"
+                data-testid="login-email"
                 {...register("email")}
                 style={{
                   background: "rgba(255,255,255,0.03)",
@@ -228,6 +229,7 @@ export function LoginPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
+                data-testid="login-password"
                 {...register("password")}
                 style={{
                   background: "rgba(255,255,255,0.03)",
@@ -266,6 +268,7 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={loading}
+            data-testid="login-submit"
             className="w-full font-medium text-sm"
             style={{
               background: loading ? "rgba(79,110,247,0.5)" : "#4F6EF7",

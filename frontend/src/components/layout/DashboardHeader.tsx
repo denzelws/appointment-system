@@ -65,6 +65,7 @@ export function DashboardHeader({
             value={searchValue}
             onChange={(event) => onSearchChange(event.target.value)}
             placeholder="Search appointments..."
+            data-testid="dashboard-search"
             className="min-w-0 flex-1 bg-transparent text-[13px] text-[#C8D4F0] outline-none placeholder:text-[#6A7E9C]"
             type="search"
           />
@@ -77,6 +78,7 @@ export function DashboardHeader({
             type="button"
             aria-expanded={isNotificationsOpen}
             aria-label="Notifications"
+            data-testid="notification-bell"
             onClick={() => setIsNotificationsOpen((open) => !open)}
             className="relative text-[#6A7E9C] hover:text-white transition-colors"
           >
@@ -85,7 +87,10 @@ export function DashboardHeader({
           </button>
 
           {isNotificationsOpen && (
-            <div className="absolute right-0 top-9 w-72 rounded-xl border border-white/[0.07] bg-[#101628]/95 p-4 shadow-2xl backdrop-blur-xl">
+            <div
+              data-testid="notification-popover"
+              className="absolute right-0 top-9 w-72 rounded-xl border border-white/[0.07] bg-[#101628]/95 p-4 shadow-2xl backdrop-blur-xl"
+            >
               <p className="text-[13px] font-semibold text-white">
                 Welcome back!
               </p>

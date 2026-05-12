@@ -79,7 +79,11 @@ export function AppointmentForm({
             ))}
           </div>
         ) : availableSlots.length === 0 ? (
-          <p className="text-[12px]" style={{ color: "#4A5A7A" }}>
+          <p
+            data-testid="no-available-slots"
+            className="text-[12px]"
+            style={{ color: "#4A5A7A" }}
+          >
             Nenhum horário disponível para esta data.
           </p>
         ) : (
@@ -89,6 +93,7 @@ export function AppointmentForm({
                 <button
                   key={slot}
                   type="button"
+                  data-testid="slot-button"
                   onClick={() => onSelectSlot(slot)}
                   className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border ${
                     selectedSlot === slot
@@ -113,6 +118,7 @@ export function AppointmentForm({
             rows={2}
             maxLength={500}
             placeholder="Notes (optional)..."
+            data-testid="appointment-notes"
             className="w-full resize-none text-[13px] rounded-[10px] px-3 py-2.5 transition-colors"
             style={{
               background: "rgba(255,255,255,0.03)",
@@ -152,6 +158,7 @@ export function AppointmentForm({
         <button
           type="submit"
           disabled={isSubmitting || loading || !selectedDate || !hasValidSlot}
+          data-testid="confirm-appointment"
           className="w-full text-white font-medium text-[14px] py-3.5 rounded-xl transition-all"
           style={{
             background:

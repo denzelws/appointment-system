@@ -19,4 +19,18 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    files: ['cypress/**/*.ts', 'cypress.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.mocha,
+        ...globals.cypress,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-namespace': 'off',
+    },
+  },
 ])
