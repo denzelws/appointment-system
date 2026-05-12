@@ -6,7 +6,7 @@ import { IAuditLogRepository } from "../../../domain/interfaces/IAuditLogReposit
 import { IAvailabilityRepository } from "../../../domain/interfaces/IAvailabilityRepository";
 import { AppointmentRules } from "../../../domain/rules/AppointmentRules";
 import { AvailabilityRules } from "../../../domain/rules/AvailabilityRules";
-import { DayOfWeek } from "../../../domain/value-objects/DayOfWeek";
+import { getBusinessDayOfWeek } from "../../../shared/time/business-timezone";
 import {
   AppointmentResponseDTO,
   CreateAppointmentDTO,
@@ -32,7 +32,7 @@ export class CreateAppointmentUseCase {
       throw new DomainException("Não é possível agendar horários no passado.");
     }
 
-    const dayOfWeek = startTime.getUTCDay() as DayOfWeek;
+    const dayOfWeek = getBusinessDayOfWeek(startTime);
     const config = await this.availabilityRepo.findByDayOfWeek(dayOfWeek);
 
     if (!AvailabilityRules.isDayActive(config)) {

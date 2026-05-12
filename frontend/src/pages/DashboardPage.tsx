@@ -10,6 +10,7 @@ import { useAppointment } from "../hooks/useAppointment";
 import { useAuth } from "../hooks/useAuth";
 
 import { type Appointment } from "../types";
+import { formatCalendarDate } from "../utils/business-timezone";
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -36,7 +37,7 @@ export function DashboardPage() {
     if (!selectedDate) return;
 
     let isCurrent = true;
-    const dateStr = selectedDate.toISOString().split("T")[0];
+    const dateStr = formatCalendarDate(selectedDate);
 
     const loadSlots = async () => {
       setLoadingSlots(true);

@@ -20,8 +20,8 @@ describe("RN004 — Restrição de horário de funcionamento", () => {
     const config = makeConfig();
     const result = AvailabilityRules.isWithinBusinessHours(
       config,
-      new Date("2026-05-11T10:00:00Z"),
-      new Date("2026-05-11T10:30:00Z"),
+      new Date("2026-05-11T13:00:00Z"),
+      new Date("2026-05-11T13:30:00Z"),
     );
     expect(result).toBe(true);
   });
@@ -30,8 +30,8 @@ describe("RN004 — Restrição de horário de funcionamento", () => {
     const config = makeConfig();
     const result = AvailabilityRules.isWithinBusinessHours(
       config,
-      new Date("2026-05-11T08:00:00Z"),
-      new Date("2026-05-11T08:30:00Z"),
+      new Date("2026-05-11T11:00:00Z"),
+      new Date("2026-05-11T11:30:00Z"),
     );
     expect(result).toBe(false);
   });
@@ -40,8 +40,8 @@ describe("RN004 — Restrição de horário de funcionamento", () => {
     const config = makeConfig();
     const result = AvailabilityRules.isWithinBusinessHours(
       config,
-      new Date("2026-05-11T18:00:00Z"),
-      new Date("2026-05-11T18:30:00Z"),
+      new Date("2026-05-11T21:00:00Z"),
+      new Date("2026-05-11T21:30:00Z"),
     );
     expect(result).toBe(false);
   });
@@ -50,8 +50,8 @@ describe("RN004 — Restrição de horário de funcionamento", () => {
     const config = makeConfig({ isActive: false });
     const result = AvailabilityRules.isWithinBusinessHours(
       config,
-      new Date("2026-05-11T10:00:00Z"),
-      new Date("2026-05-11T10:30:00Z"),
+      new Date("2026-05-11T13:00:00Z"),
+      new Date("2026-05-11T13:30:00Z"),
     );
     expect(result).toBe(false);
   });

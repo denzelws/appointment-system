@@ -1,6 +1,10 @@
 import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
 import { IAvailabilityRepository } from "../../../domain/interfaces/IAvailabilityRepository";
-import { DayOfWeek } from "../../../domain/value-objects/DayOfWeek";
+import {
+  businessDateAndSlotToUtc,
+  businessDateToUtcRange,
+  getBusinessDayOfWeek,
+} from "../../../shared/time/business-timezone";
 
 interface GetAvailableSlotsInput {
   date: string;
@@ -21,8 +25,8 @@ export class GetAvailableSlotsUseCase {
   async execute(
     input: GetAvailableSlotsInput,
   ): Promise<GetAvailableSlotsOutput> {
-    const date = new Date(`${input.date}T00:00:00Z`);
-    const dayOfWeek = date.getUTCDay() as DayOfWeek;
+    const { startUtc, endUtc } = businessDateToUtcRange(input.date);
+    const dayOfWeek = getBusinessDayOfWeek(startUtc);
 
     const config = await this.availabilityRepo.findByDayOfWeek(dayOfWeek);
 
@@ -36,12 +40,9 @@ export class GetAvailableSlotsUseCase {
       config.slotDurationMinutes,
     );
 
-    const startOfDay = new Date(`${input.date}T00:00:00Z`);
-    const endOfDay = new Date(`${input.date}T23:59:59Z`);
-
     const { appointments } = await this.appointmentRepo.findMany({
-      startDate: startOfDay,
-      endDate: endOfDay,
+      startDate: startUtc,
+      endDate: endUtc,
       page: 1,
       limit: 100,
       offset: 0,
@@ -52,7 +53,7 @@ export class GetAvailableSlotsUseCase {
     );
 
     const unavailable = allSlots.filter((slot) => {
-      const slotStart = this.slotToDate(input.date, slot);
+      const slotStart = businessDateAndSlotToUtc(input.date, slot);
       const slotEnd = new Date(
         slotStart.getTime() + config.slotDurationMinutes * 60 * 1000,
       );
@@ -93,15 +94,5 @@ export class GetAvailableSlotsUseCase {
     }
 
     return slots;
-  }
-
-  private slotToDate(date: string, slot: string): Date {
-    const [timePart, period] = slot.split(" ");
-    let [hours, minutes] = timePart.split(":").map(Number);
-    if (period === "PM" && hours !== 12) hours += 12;
-    if (period === "AM" && hours === 12) hours = 0;
-    return new Date(
-      `${date}T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00Z`,
-    );
   }
 }

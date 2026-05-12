@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { type Appointment } from "../../types";
+import {
+  formatBusinessDate,
+  formatBusinessTime,
+} from "../../utils/business-timezone";
 import { getInitials } from "../../utils/formatters";
 
 const STATUS_CONFIG = {
@@ -39,7 +43,7 @@ export function TimelineRow({
   const canCancel = apt.status !== "CANCELLED" && (isAdmin || isOwner);
   const canConfirm = isAdmin && apt.status === "PENDING";
 
-  const startTime = formatUTCSlotTime(apt.startTime);
+  const startTime = formatBusinessTime(apt.startTime);
   const initials = getInitials(apt.notes || "User");
 
   return (
@@ -63,7 +67,7 @@ export function TimelineRow({
           {apt.notes || "Appointment"}
         </p>
         <p className="text-[13px] text-[#6A7E9C] mt-0.5">
-          {formatUTCSlotDate(apt.startTime)}• 30m
+          {formatBusinessDate(apt.startTime)}• 30m
         </p>
       </div>
 
@@ -107,22 +111,4 @@ export function TimelineRow({
       </div>
     </div>
   );
-}
-
-function formatUTCSlotTime(isoDate: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "UTC",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  }).format(new Date(isoDate));
-}
-
-function formatUTCSlotDate(isoDate: string): string {
-  return new Intl.DateTimeFormat("pt-BR", {
-    timeZone: "UTC",
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  }).format(new Date(isoDate));
 }

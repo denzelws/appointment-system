@@ -1,4 +1,5 @@
 import { AvailabilityConfig } from "../entities/AvailabilityConfig";
+import { getBusinessMinutesOfDay } from "../../shared/time/business-timezone";
 
 export class AvailabilityRules {
   static isWithinBusinessHours(
@@ -33,7 +34,7 @@ export class AvailabilityRules {
   }
 
   private static timeToMinutes(date: Date): number {
-    return date.getUTCHours() * 60 + date.getUTCMinutes();
+    return getBusinessMinutesOfDay(date);
   }
 
   private static timeStringToMinutes(time: string): number {

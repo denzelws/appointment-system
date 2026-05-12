@@ -102,8 +102,8 @@ describe("AvailabilityRules", () => {
 
       const result = AvailabilityRules.isWithinBusinessHours(
         config,
-        new Date("2026-04-20T10:00:00Z"),
-        new Date("2026-04-20T10:30:00Z"),
+        new Date("2026-04-20T13:00:00Z"),
+        new Date("2026-04-20T13:30:00Z"),
       );
 
       expect(result).toBe(true);
@@ -121,8 +121,8 @@ describe("AvailabilityRules", () => {
 
       const result = AvailabilityRules.isWithinBusinessHours(
         config,
-        new Date("2026-04-20T19:00:00Z"),
-        new Date("2026-04-20T19:30:00Z"),
+        new Date("2026-04-20T22:00:00Z"),
+        new Date("2026-04-20T22:30:00Z"),
       );
 
       expect(result).toBe(false);
@@ -140,8 +140,8 @@ describe("AvailabilityRules", () => {
 
       const result = AvailabilityRules.isWithinBusinessHours(
         config,
-        new Date("2026-04-19T10:00:00Z"),
-        new Date("2026-04-19T10:30:00Z"),
+        new Date("2026-04-19T13:00:00Z"),
+        new Date("2026-04-19T13:30:00Z"),
       );
 
       expect(result).toBe(false);
