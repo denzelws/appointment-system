@@ -29,23 +29,34 @@ function addDays(date: Date, days: number) {
 
 function findAvailableSlot(
   token: string,
-  offset = 1,
 ): Cypress.Chainable<SlotChoice> {
-  const date = addDays(new Date(), offset);
+  let choice: SlotChoice | undefined;
+  const offsets = Array.from({ length: 45 }, (_value, index) => index + 1);
 
-  if (offset > 45) {
-    throw new Error("No available slot found in the next 45 days.");
-  }
+  return cy
+    .wrap<number[]>(offsets)
+    .each((offset: number) => {
+      if (choice) return false;
 
-  return cy.getAvailableSlots(formatCalendarDate(date), token).then((slots) => {
-    const slot = slots.available[0];
+      const date = addDays(new Date(), offset);
 
-    if (slot) {
-      return { date, slot };
-    }
+      return cy
+        .getAvailableSlots(formatCalendarDate(date), token)
+        .then((slots) => {
+          const slot = slots.available[0];
 
-    return findAvailableSlot(token, offset + 1);
-  });
+          if (slot) {
+            choice = { date, slot };
+          }
+        });
+    })
+    .then(() => {
+      if (!choice) {
+        throw new Error("No available slot found in the next 45 days.");
+      }
+
+      return choice;
+    });
 }
 
 function moveCalendarTo(date: Date, attempts = 0) {
@@ -74,7 +85,7 @@ function selectCalendarDate(date: Date) {
   const year = String(date.getFullYear());
 
   cy.get("button")
-    .filter((_index, button) => {
+    .filter((_index: number, button: HTMLElement) => {
       const label = button.getAttribute("aria-label") ?? "";
       return label.includes(`${month} ${day}`) && label.includes(year);
     })
