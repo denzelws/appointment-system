@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { CancelAppointmentUseCase } from "../../application/use-cases/appointment/CancelAppointmentUseCase";
 import { ConfirmAppointmentUseCase } from "../../application/use-cases/appointment/ConfirmAppointmentUseCase";
 import { CreateAppointmentUseCase } from "../../application/use-cases/appointment/CreateAppointmentUseCase";
+import { GetAvailableSlotsUseCase } from "../../application/use-cases/appointment/GetAvailableSlotUseCase";
 import { ListAppointmentsUseCase } from "../../application/use-cases/appointment/ListAppointmentsUseCase";
 import { UserRole } from "../../domain/value-objects/UserRole";
 import { KnexAppointmentRepository } from "../../infrastructure/database/repositories/KnexAppointmentRepository";
@@ -96,21 +97,21 @@ export const cancel = async (
 
 const confirmAppointmentUseCase = new ConfirmAppointmentUseCase(
   appointmentRepo,
-  auditRepo
+  auditRepo,
 );
 
 export const confirm = async (
   request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const { id } = request.params;
   const user = request.user!;
 
-  if (user.role !== 'ADMIN') {
+  if (user.role !== "ADMIN") {
     return reply.status(403).send({
       status: 403,
-      code: 'FORBIDDEN',
-      message: 'Apenas administradores podem confirmar agendamentos.',
+      code: "FORBIDDEN",
+      message: "Apenas administradores podem confirmar agendamentos.",
       timestamp: new Date().toISOString(),
       path: request.url,
     });
@@ -120,9 +121,41 @@ export const confirm = async (
 
   return reply.status(200).send({
     status: 200,
-    code: 'APPOINTMENT_CONFIRMED',
-    message: 'Agendamento confirmado com sucesso.',
+    code: "APPOINTMENT_CONFIRMED",
+    message: "Agendamento confirmado com sucesso.",
     data: appointment,
+    timestamp: new Date().toISOString(),
+  });
+};
+
+const getAvailableSlotsUseCase = new GetAvailableSlotsUseCase(
+  appointmentRepo,
+  availabilityRepo,
+);
+
+export const getAvailableSlots = async (
+  request: FastifyRequest<{ Querystring: { date: string } }>,
+  reply: FastifyReply,
+) => {
+  const { date } = request.query;
+
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return reply.status(400).send({
+      status: 400,
+      code: "INVALID_DATE",
+      message: "Data deve estar no formato YYYY-MM-DD.",
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    });
+  }
+
+  const result = await getAvailableSlotsUseCase.execute({ date });
+
+  return reply.status(200).send({
+    status: 200,
+    code: "SLOTS_RETRIEVED",
+    message: "Slots disponíveis recuperados com sucesso.",
+    data: result,
     timestamp: new Date().toISOString(),
   });
 };

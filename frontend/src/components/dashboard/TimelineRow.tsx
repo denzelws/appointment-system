@@ -39,11 +39,7 @@ export function TimelineRow({
   const canCancel = apt.status !== "CANCELLED" && (isAdmin || isOwner);
   const canConfirm = isAdmin && apt.status === "PENDING";
 
-  const startTime = new Date(apt.startTime).toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
+  const startTime = formatUTCSlotTime(apt.startTime);
   const initials = getInitials(apt.notes || "User");
 
   return (
@@ -67,11 +63,7 @@ export function TimelineRow({
           {apt.notes || "Appointment"}
         </p>
         <p className="text-[13px] text-[#6A7E9C] mt-0.5">
-          {new Date(apt.startTime).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          })}{" "}
-          • 30m
+          {formatUTCSlotDate(apt.startTime)}• 30m
         </p>
       </div>
 
@@ -115,4 +107,22 @@ export function TimelineRow({
       </div>
     </div>
   );
+}
+
+function formatUTCSlotTime(isoDate: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(isoDate));
+}
+
+function formatUTCSlotDate(isoDate: string): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  }).format(new Date(isoDate));
 }

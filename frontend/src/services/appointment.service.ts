@@ -33,4 +33,13 @@ export const appointmentService = {
     );
     return data.data;
   },
+
+  async getAvailableSlots(
+    date: string,
+  ): Promise<{ available: string[]; unavailable: string[] }> {
+    const { data } = await api.get<
+      ApiResponse<{ date: string; available: string[]; unavailable: string[] }>
+    >("/appointments/available", { params: { date } });
+    return data.data;
+  },
 };

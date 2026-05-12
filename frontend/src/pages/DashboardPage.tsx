@@ -21,6 +21,7 @@ export function DashboardPage() {
     create,
     cancel,
     confirmAppointment,
+    getAvailableSlots,
   } = useAppointment();
 
   const now = new Date();
@@ -28,6 +29,25 @@ export function DashboardPage() {
     new Date(),
   );
   const [selectedSlot, setSelectedSlot] = useState("09:00 AM");
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const dateStr = selectedDate.toISOString().split("T")[0];
+
+    setLoadingSlots(true);
+    getAvailableSlots(dateStr)
+      .then(({ available }) => {
+        setAvailableSlots(available);
+
+        setSelectedSlot((prev) =>
+          available.includes(prev) ? prev : (available[0] ?? ""),
+        );
+      })
+      .finally(() => setLoadingSlots(false));
+  }, [selectedDate, getAvailableSlots]);
 
   const todayLabel = now.toLocaleDateString("en-US", {
     weekday: "long",
@@ -95,6 +115,8 @@ export function DashboardPage() {
               <AppointmentForm
                 selectedDate={selectedDate}
                 selectedSlot={selectedSlot}
+                availableSlots={availableSlots}
+                loadingSlots={loadingSlots}
                 onSelectSlot={setSelectedSlot}
                 onCreate={handleCreate}
                 loading={loading}

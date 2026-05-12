@@ -67,6 +67,14 @@ export function useAppointment() {
     }
   };
 
+  const getAvailableSlots = useCallback(async (date: string) => {
+    try {
+      return await appointmentService.getAvailableSlots(date);
+    } catch {
+      return { available: [], unavailable: [] };
+    }
+  }, []);
+
   return {
     appointments,
     loading,
@@ -76,5 +84,6 @@ export function useAppointment() {
     create,
     cancel,
     confirmAppointment,
+    getAvailableSlots,
   };
 }

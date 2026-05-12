@@ -1,5 +1,11 @@
 import { FastifyInstance, FastifyPluginAsync } from "fastify";
-import { cancel, confirm, create, list } from "../controllers/appointment.controller";
+import {
+  cancel,
+  confirm,
+  create,
+  getAvailableSlots,
+  list,
+} from "../controllers/appointment.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 import {
   createAppointmentJsonSchema,
@@ -10,6 +16,7 @@ import {
 export const appointmentRoutes: FastifyPluginAsync = async (
   app: FastifyInstance,
 ) => {
+  app.get("/appointments/available", getAvailableSlots);
   app.addHook("preHandler", authMiddleware);
 
   app.post(
@@ -42,9 +49,13 @@ export const appointmentRoutes: FastifyPluginAsync = async (
     cancel,
   );
 
-  app.patch('/appointments/:id/confirm', {
-  schema: {
-    params: idParamJsonSchema,
-  },
-}, confirm);
+  app.patch(
+    "/appointments/:id/confirm",
+    {
+      schema: {
+        params: idParamJsonSchema,
+      },
+    },
+    confirm,
+  );
 };
