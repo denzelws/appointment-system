@@ -99,20 +99,7 @@ export function DashboardPage() {
       className="h-screen flex relative overflow-hidden"
       style={{ backgroundColor: "#090C15" }}
     >
-      <div
-        className="absolute -top-[10%] -right-[5%] w-[800px] h-[800px] rounded-full blur-[140px] pointer-events-none opacity-30 mix-blend-screen z-0"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(79,110,247,1) 0%, rgba(139,92,246,1) 100%)",
-        }}
-      />
-      <div
-        className="absolute -bottom-[10%] -left-[5%] w-[800px] h-[800px] rounded-full blur-[140px] pointer-events-none opacity-20 mix-blend-screen z-0"
-        style={{
-          background:
-            "linear-gradient(270deg, rgba(79,110,247,1) 0%, rgba(139,92,246,1) 100%)",
-        }}
-      />
+      <div className="premium-ambient-bg" />
 
       <Sidebar />
       <DashboardHeader />

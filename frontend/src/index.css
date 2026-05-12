@@ -93,6 +93,17 @@
   .scrollbar-premium::-webkit-scrollbar-thumb:hover {
     background: rgba(129, 104, 236, 0.58);
   }
+
+  .premium-ambient-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 82% 10%, rgba(79, 110, 247, 0.16), transparent 34rem),
+      radial-gradient(circle at 8% 88%, rgba(88, 28, 135, 0.14), transparent 32rem),
+      radial-gradient(circle at 54% 48%, rgba(30, 64, 175, 0.08), transparent 38rem);
+  }
 }
 
 @keyframes glow-drift-1 {
