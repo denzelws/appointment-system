@@ -55,8 +55,8 @@ export function AppointmentForm({
 
   return (
     <>
-      <div className="mb-6">
-        <p className="text-[11px] font-semibold text-[#6A7E9C] tracking-wider mb-3 uppercase">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold text-[#6A7E9C] tracking-wider mb-2.5 uppercase">
           Available Slots
         </p>
 
@@ -75,13 +75,14 @@ export function AppointmentForm({
             Nenhum horário disponível para esta data.
           </p>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="scrollbar-premium max-h-32 overflow-y-auto pr-1">
+            <div className="flex flex-wrap gap-1.5">
             {availableSlots.map((slot) => (
               <button
                 key={slot}
                 type="button"
                 onClick={() => onSelectSlot(slot)}
-                className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all border ${
+                className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border ${
                   selectedSlot === slot
                     ? "bg-[#4F6EF7] border-[#4F6EF7] text-white shadow-[0_0_15px_rgba(79,110,247,0.4)]"
                     : "bg-transparent border-white/[0.08] text-[#8A9DC0] hover:border-white/[0.2]"
@@ -90,6 +91,7 @@ export function AppointmentForm({
                 {slot}
               </button>
             ))}
+            </div>
           </div>
         )}
       </div>

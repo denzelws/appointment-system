@@ -69,6 +69,30 @@
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
+
+  .scrollbar-premium {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(91, 115, 231, 0.45) rgba(10, 13, 24, 0.35);
+  }
+
+  .scrollbar-premium::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-track {
+    background: rgba(10, 13, 24, 0.35);
+    border-radius: 999px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb {
+    background: rgba(91, 115, 231, 0.45);
+    border-radius: 999px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb:hover {
+    background: rgba(129, 104, 236, 0.58);
+  }
 }
 
 @keyframes glow-drift-1 {

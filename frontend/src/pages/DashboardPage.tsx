@@ -96,7 +96,7 @@ export function DashboardPage() {
 
   return (
     <div
-      className="min-h-screen flex relative overflow-hidden"
+      className="h-screen flex relative overflow-hidden"
       style={{ backgroundColor: "#090C15" }}
     >
       <div
@@ -118,11 +118,11 @@ export function DashboardPage() {
       <DashboardHeader />
 
       <main
-        className="relative z-10 flex-1 flex gap-6 p-8"
+        className="relative z-10 flex-1 overflow-y-auto p-8"
         style={{ marginLeft: "240px", marginTop: "80px" }}
       >
-        <div className="relative w-full flex gap-6">
-          <div className="w-[360px] flex-shrink-0">
+        <div className="relative flex w-full items-start gap-6">
+          <div className="scrollbar-premium sticky top-4 z-20 max-h-[calc(100vh-6rem)] w-[360px] flex-shrink-0 self-start overflow-y-auto pr-1">
             <div className="bg-[#131929]/90 backdrop-blur-2xl border border-white/[0.04] rounded-2xl p-6 shadow-2xl">
               <AppointmentCalendar
                 selected={selectedDate}
@@ -167,7 +167,7 @@ export function DashboardPage() {
 
               <div className="h-px w-full bg-white/[0.04]" />
 
-              <div className="flex-1 p-2 overflow-y-auto">
+              <div className="flex-1 p-2">
                 {loading && appointments.length === 0 && (
                   <p className="text-[13px] text-[#6A7E9C] text-center py-12">
                     Loading...
