@@ -92,7 +92,7 @@ export function Sidebar() {
     >
       <div className="flex items-center gap-3 px-6 py-8">
         <div className="w-8 h-8 bg-[#4F6EF7] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(79,110,247,0.4)]">
-          <SchedulrIcon size={20} color="#fff" />
+          <SchedulrIcon size={20} />
         </div>
         <span className="font-display text-xl font-semibold tracking-tight text-white">
           Schedulr

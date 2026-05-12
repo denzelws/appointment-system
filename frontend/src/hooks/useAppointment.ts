@@ -2,6 +2,20 @@ import { useCallback, useState } from "react";
 import { appointmentService } from "../services/appointment.service";
 import type { Appointment } from "../types";
 
+function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const response = error.response as
+      | { data?: { message?: unknown } }
+      | undefined;
+
+    if (typeof response?.data?.message === "string") {
+      return response.data.message;
+    }
+  }
+
+  return fallback;
+}
+
 export function useAppointment() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
@@ -15,8 +29,8 @@ export function useAppointment() {
       const result = await appointmentService.list(page);
       setAppointments(result.appointments);
       setTotalPages(result.totalPages);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao buscar agendamentos.");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Erro ao buscar agendamentos."));
     } finally {
       setLoading(false);
     }
@@ -29,8 +43,8 @@ export function useAppointment() {
       const appointment = await appointmentService.create(startTime, notes);
       await fetchAppointments();
       return appointment;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao criar agendamento.");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Erro ao criar agendamento."));
       return null;
     } finally {
       setLoading(false);
@@ -44,8 +58,8 @@ export function useAppointment() {
       await appointmentService.cancel(id);
       await fetchAppointments();
       return true;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao cancelar.");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Erro ao cancelar."));
       return false;
     } finally {
       setLoading(false);
@@ -59,8 +73,8 @@ export function useAppointment() {
       await appointmentService.confirm(id);
       await fetchAppointments();
       return true;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao confirmar.");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Erro ao confirmar."));
       return false;
     } finally {
       setLoading(false);

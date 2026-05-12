@@ -35,18 +35,34 @@ export function DashboardPage() {
   useEffect(() => {
     if (!selectedDate) return;
 
+    let isCurrent = true;
     const dateStr = selectedDate.toISOString().split("T")[0];
 
-    setLoadingSlots(true);
-    getAvailableSlots(dateStr)
-      .then(({ available }) => {
+    const loadSlots = async () => {
+      setLoadingSlots(true);
+
+      try {
+        const { available } = await getAvailableSlots(dateStr);
+
+        if (!isCurrent) return;
+
         setAvailableSlots(available);
 
         setSelectedSlot((prev) =>
           available.includes(prev) ? prev : (available[0] ?? ""),
         );
-      })
-      .finally(() => setLoadingSlots(false));
+      } finally {
+        if (isCurrent) {
+          setLoadingSlots(false);
+        }
+      }
+    };
+
+    void loadSlots();
+
+    return () => {
+      isCurrent = false;
+    };
   }, [selectedDate, getAvailableSlots]);
 
   const todayLabel = now.toLocaleDateString("en-US", {

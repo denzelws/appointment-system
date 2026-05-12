@@ -2,6 +2,20 @@ import { useState } from "react";
 import { authService } from "../services/auth.service";
 import type { User } from "../types";
 
+function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const response = error.response as
+      | { data?: { message?: unknown } }
+      | undefined;
+
+    if (typeof response?.data?.message === "string") {
+      return response.data.message;
+    }
+  }
+
+  return fallback;
+}
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(authService.getStoredUser());
   const [loading, setLoading] = useState(false);
@@ -14,8 +28,8 @@ export function useAuth() {
       const { user } = await authService.login(email, password);
       setUser(user);
       return true;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao fazer login.");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Erro ao fazer login."));
       return false;
     } finally {
       setLoading(false);
@@ -31,8 +45,8 @@ export function useAuth() {
       const { user } = await authService.login(email, password);
       setUser(user);
       return true;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao cadastrar.");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Erro ao cadastrar."));
       return false;
     } finally {
       setLoading(false);
