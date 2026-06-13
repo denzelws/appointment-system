@@ -7,19 +7,26 @@ import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 
+const telemetryEnabled = process.env.OTEL_ENABLED !== "false";
+
+const otelEndpoint =
+  process.env.OTEL_EXPORTER_OTLP_ENDPOINT ?? "http://localhost:4318";
+
+const serviceName = process.env.OTEL_SERVICE_NAME ?? "schedulr-backend";
+
 export const fastifyOtelInstrumentation = new FastifyOtelInstrumentation();
 
 const traceExporter = new OTLPTraceExporter({
-  url: "http://localhost:4318/v1/traces",
+  url: `${otelEndpoint}/v1/traces`,
 });
 
 const metricExporter = new OTLPMetricExporter({
-  url: "http://localhost:4318/v1/metrics",
+  url: `${otelEndpoint}/v1/metrics`,
 });
 
 const sdk = new NodeSDK({
   resource: resourceFromAttributes({
-    [ATTR_SERVICE_NAME]: "schedulr-backend",
+    [ATTR_SERVICE_NAME]: serviceName,
   }),
   traceExporter,
   metricReader: new PeriodicExportingMetricReader({
@@ -28,9 +35,10 @@ const sdk = new NodeSDK({
   instrumentations: [getNodeAutoInstrumentations(), fastifyOtelInstrumentation],
 });
 
-sdk.start();
-
-console.log("OpenTelemetry started for schedulr-backend");
+if (telemetryEnabled) {
+  sdk.start();
+  console.log(`OpenTelemetry started for ${serviceName}`);
+}
 
 process.on("SIGTERM", () => {
   sdk
