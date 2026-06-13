@@ -9,6 +9,22 @@ import {
 import { AppointmentStatus } from "../../../domain/value-objects/AppointmentStatus";
 import { db } from "../index";
 
+type PostgresError = Error & {
+  code?: string;
+  constraint?: string;
+};
+
+const EXCLUSION_VIOLATION = "23P01";
+const DEADLOCK_DETECTED = "40P01";
+
+const OVERLAPPING_APPOINTMENTS_CONSTRAINT = "no_overlapping_appointments";
+
+const MAX_TRANSACTION_ATTEMPTS = 3;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 interface AppointmentRow {
   id: string;
   user_id: string;
@@ -81,31 +97,58 @@ export class KnexAppointmentRepository implements IAppointmentRepository {
   async createWithTransaction(
     data: CreateAppointmentData,
   ): Promise<Appointment> {
-    return db.transaction(async (trx) => {
-      const overlapping = await trx("appointments")
-        .whereNotIn("status", ["CANCELLED"])
-        .whereRaw("tstzrange(?, ?) && tstzrange(start_time, end_time)", [
-          data.startTime.toISOString(),
-          data.endTime.toISOString(),
-        ])
-        .select("*");
+    for (let attempt = 1; attempt <= MAX_TRANSACTION_ATTEMPTS; attempt++) {
+      try {
+        return await db.transaction(async (trx) => {
+          const overlapping = await trx("appointments")
+            .whereNotIn("status", ["CANCELLED"])
+            .whereRaw("tstzrange(?, ?) && tstzrange(start_time, end_time)", [
+              data.startTime.toISOString(),
+              data.endTime.toISOString(),
+            ])
+            .select("*");
 
-      if (overlapping.length > 0) {
-        throw new ConflictException("Este horário já está indisponível.");
+          if (overlapping.length > 0) {
+            throw new ConflictException("Este horário já está indisponível.");
+          }
+
+          const [row] = await trx("appointments")
+            .insert({
+              user_id: data.userId,
+              start_time: data.startTime,
+              end_time: data.endTime,
+              status: data.status,
+              notes: data.notes || null,
+            })
+            .returning("*");
+
+          return this.mapRowToEntity(row as AppointmentRow);
+        });
+      } catch (error) {
+        const databaseError = error as PostgresError;
+
+        if (
+          databaseError.code === EXCLUSION_VIOLATION &&
+          databaseError.constraint === OVERLAPPING_APPOINTMENTS_CONSTRAINT
+        ) {
+          throw new ConflictException("Este horário já está indisponível.");
+        }
+
+        if (
+          databaseError.code === DEADLOCK_DETECTED &&
+          attempt < MAX_TRANSACTION_ATTEMPTS
+        ) {
+          const backoffMs = 50 * attempt + Math.floor(Math.random() * 50);
+
+          await sleep(backoffMs);
+          continue;
+        }
+
+        throw error;
       }
+    }
 
-      const [row] = await trx("appointments")
-        .insert({
-          user_id: data.userId,
-          start_time: data.startTime,
-          end_time: data.endTime,
-          status: data.status,
-          notes: data.notes || null,
-        })
-        .returning("*");
-
-      return this.mapRowToEntity(row as AppointmentRow);
-    });
+    throw new Error("Appointment transaction retry limit exceeded");
   }
 
   async update(appointment: Appointment): Promise<Appointment> {
