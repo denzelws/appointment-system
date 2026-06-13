@@ -1,5 +1,7 @@
-import { buildApp } from "../infrastructure/app";
 import "dotenv/config";
+import "../telemetry";
+
+import { buildApp } from "../infrastructure/app";
 
 async function start() {
   const app = await buildApp();

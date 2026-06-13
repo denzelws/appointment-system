@@ -1,3 +1,4 @@
+import { ConflictException } from "../../../domain";
 import { Appointment } from "../../../domain/entities/Appointment";
 import {
   CreateAppointmentData,
@@ -90,7 +91,7 @@ export class KnexAppointmentRepository implements IAppointmentRepository {
         .select("*");
 
       if (overlapping.length > 0) {
-        throw new Error("CONFLICT");
+        throw new ConflictException("Este horário já está indisponível.");
       }
 
       const [row] = await trx("appointments")
