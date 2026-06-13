@@ -3,6 +3,9 @@ type SlotChoice = {
   slot: string;
 };
 
+const DEMO_PAUSE = 1200;
+const SHORT_PAUSE = 800;
+
 function testUser(label: string) {
   const id = `${label}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
@@ -100,7 +103,7 @@ function loginThroughUi(email: string, password: string) {
   cy.get('[data-testid="login-submit"]').click();
   cy.location("pathname").should("eq", "/dashboard");
   cy.contains("Operational Timeline").should("be.visible");
-  cy.wait(700);
+  cy.wait(DEMO_PAUSE);
 }
 
 describe("product journey", () => {
@@ -124,38 +127,41 @@ describe("product journey", () => {
             "contain",
             "Your dashboard is ready. Create or manage appointments from here.",
           );
-        cy.wait(700);
+        cy.wait(DEMO_PAUSE);
 
         selectCalendarDate(date);
         cy.get('[data-testid="slot-button"]').should("exist");
-        cy.wait(700);
+        cy.wait(DEMO_PAUSE);
 
         cy.contains('[data-testid="slot-button"]', slot).click();
-        cy.wait(600);
+        cy.wait(SHORT_PAUSE);
 
         cy.get('[data-testid="appointment-notes"]').type(note);
+        cy.wait(SHORT_PAUSE);
+
         cy.get('[data-testid="confirm-appointment"]').click();
 
         cy.contains('[data-testid="timeline-note"]', note).should("be.visible");
-        cy.wait(800);
+        cy.wait(DEMO_PAUSE);
 
         cy.get('[data-testid="dashboard-search"]').type(note);
         cy.get('[data-testid="timeline-row"]').should("have.length", 1);
         cy.contains('[data-testid="timeline-note"]', note).should("be.visible");
-        cy.wait(800);
+        cy.wait(DEMO_PAUSE);
 
         cy.contains("Sign out").click();
         cy.location("pathname").should("eq", "/login");
+        cy.wait(SHORT_PAUSE);
 
         loginThroughUi(secondUser.email, secondUser.password);
         selectCalendarDate(date);
-        cy.wait(700);
+        cy.wait(DEMO_PAUSE);
 
         cy.get('[data-testid="slot-button"]', { timeout: 10000 }).should(
           "exist",
         );
         cy.contains('[data-testid="slot-button"]', slot).should("not.exist");
-        cy.wait(800);
+        cy.wait(DEMO_PAUSE);
       });
     });
   });
