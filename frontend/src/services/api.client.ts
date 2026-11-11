@@ -1,6 +1,17 @@
 import axios, { AxiosError } from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
+const FALLBACK_API_URL = "http://localhost:3000/api/v1";
+
+const configuredApiUrl = import.meta.env.VITE_API_URL as string | undefined;
+
+if (!configuredApiUrl && import.meta.env.PROD) {
+  console.warn(
+    "[api.client] VITE_API_URL is not set in this production build; falling back to " +
+      `${FALLBACK_API_URL}. Set VITE_API_URL at build time to point at the published API.`,
+  );
+}
+
+const BASE_URL = configuredApiUrl || FALLBACK_API_URL;
 
 export const api = axios.create({
   baseURL: BASE_URL,

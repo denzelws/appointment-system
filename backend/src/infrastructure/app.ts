@@ -7,6 +7,7 @@ import { appointmentRoutes } from "../interfaces/routes/appointment.routes";
 import { authRoutes } from "../interfaces/routes/auth.routes";
 import { fastifyOtelInstrumentation } from "../telemetry";
 import { closeDb, db } from "./database";
+import { getAllowedOrigins, getEnv } from "./config/env";
 
 export async function buildApp() {
   const app = Fastify({
@@ -36,8 +37,17 @@ export async function buildApp() {
     }
   });
 
+  const env = getEnv();
+  const allowedOrigins = getAllowedOrigins(env);
+
+  if (env.NODE_ENV === "production" && allowedOrigins === false) {
+    app.log.warn(
+      "ALLOWED_ORIGINS is not set in production: cross-origin browser requests will be rejected. Set ALLOWED_ORIGINS to a comma-separated list of trusted origins.",
+    );
+  }
+
   await app.register(cors, {
-    origin: true,
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   });
